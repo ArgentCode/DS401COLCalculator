@@ -1,4 +1,4 @@
 # DS401COLCalculator
-A project for the Iowa State University data science capstone course. 
+A project for the Iowa State University Data Science capstone course. 
 
-Our objective is to create a dashboard for undergraduate and graduate students to compare the cost in living in schools that they will likely be comparing. The motivation behind this project when so many other cost of living calculators exist is that many of the other calculators are primarily based on costs that don't apply to a 18-25 year old student. Namely in housing, we use rental data rather than housing data.
+Our objective is to create a dashboard for undergraduate and graduate students to compare the cost in living in various college towns across the US. The primary motivation behind this project is that many of the existing calculators for cost of living factor in costs that would not apply to an average college student. A primary example is the cost of owning a single-family home, whereas this calculator uses the cost of renting a studio or 1-bedroom apartment.
