@@ -8,16 +8,202 @@
 #
 #
 
-library(shiny)
-library(shinydashboard)
+library("tidyverse")
+library("WDI")
+library("leaflet")
+library("sf")
+library("rnaturalearthdata")
 
-# Define server logic required to draw a histogram
-function(input, output, session) {
+
+source("data-processing.R", local = TRUE)
+
+function(input, output, session){
+  
+  output$pi_chart <- renderPlot({
+    which_university <- input$selected_univerity
+    carOwner <- input$car_Owner
+    
+    # Filtered Data
+    miles_driven <- input$miles
+    mpg <- input$mpg
+    
+    # Include Gas and Car Maintenance
+    if(carOwner){ 
+      budget_pie <- university_data %>%  
+        filter(University == which_university) %>% 
+        mutate(total_Gas = round(Gas * miles_driven / mpg/12), 2) %>% 
+        select(appartment_mean_cost, Monthly_food, Car_Maintenance, total_Gas)%>% 
+        pivot_longer(everything()) %>% 
+        filter(!grepl("^(Total|Remaining)", name))
+      
+      ggplot(data = budget_pie, aes(x = "", y = value, fill = name)) +
+        geom_col() +
+        coord_polar("y", start = 0) +
+        geom_text(aes(label = value),
+                  position = position_stack(vjust = 0.7)) +
+        theme_void() +
+        guides(fill = guide_legend(title = "Monthly Expenses")) +
+        labs(x = "Monthly Expenses",
+             y = "Cost (in dollars)",
+             title = "Overall Cost") +
+        scale_fill_manual(labels = c("Rent", "Car Maintenance", "Food", "Gas"), values=c("#1884bf", "#d55e00", "#e79f00", "#f0e441"))
+    }
+    
+    # Exclude Gas and Car Maintenance
+    else{
+      budget_pie <- university_data %>%  
+        filter(University == which_university) %>% 
+        mutate(total_Gas = round(Gas * miles_driven / 25/12), 2) %>% 
+        select(appartment_mean_cost, Monthly_food)%>% 
+        pivot_longer(everything()) %>% 
+        filter(!grepl("^(Total|Remaining)", name))
+      
+      ggplot(data = budget_pie, aes(x = "", y = value, fill = name)) +
+        geom_col() +
+        coord_polar("y", start = 0) +
+        geom_text(aes(label = value),
+                  position = position_stack(vjust = 0.7)) +
+        theme_void() +
+        guides(fill = guide_legend(title = "Expenses")) +
+        labs(x = "Expenses",
+             y = "Cost per Month (in dollars)",
+             title = "Overall Cost") +
+        scale_fill_manual(labels = c("Rent", "Food"),values=c("#1884bf","#e79f00")) 
+    }
+    
+    
+  })
+  
+  # Apartments
+  output$apartment_chart <- renderPlot({
+    which_university <- input$selected_univerity
+    Price <- university_data %>%  
+      filter(University == which_university)
+    
+    Value <- Price$appartment_mean_cost
+    
+    ggplot(university_data, aes(x = appartment_mean_cost)) +
+      geom_histogram( fill= "#A1D0EA") +
+      geom_vline(xintercept=Value, color="red") +
+      theme_classic() +
+      labs(x = "Monthly Rent",
+           y = "count", 
+           title = "Distribution of Rent")
+  })
+  
+  # Food
+  output$food_chart <- renderPlot({
+    which_university <- input$selected_univerity
+    foodPrice <- university_data %>%  
+      filter(University == which_university)
+    
+    Value <- foodPrice$Monthly_food
+    
+    ggplot(university_data, aes(x = Monthly_food)) +
+      geom_histogram( fill= "#FFF157") +
+      geom_vline(xintercept=Value, color="red") +
+      theme_classic() +
+      labs(x = "Monthly Food Cost",
+           y = "count", 
+           title = "Distribution of Food Costs")
+  })
+  
+  
+  # Gas
+  output$gas_prices <- renderPlot({
+    which_university <- input$selected_univerity
+    Price <- university_data %>%  
+      filter(University == which_university)
+    
+    Value <- Price$Gas
+    
+    ggplot(university_data, aes(x = Gas)) +
+      geom_histogram( fill= "#f5c77e") +
+      geom_vline(xintercept=Value, color="red") +
+      theme_classic() +
+      labs(x = "Cost of Regular Gas (per gallon)",
+           y = "count", 
+           title = "Distribution of the Cost of Gas")
+  })
 
   
-    #full dataset output for the "dataset" page
-    output$datatab <- renderDataTable(costData)
+  # Compare 1
+  output$compare1 <-renderPlot({
+    which_university <- input$selected_univerity1
+    which_university2 <- input$selected_univerity2
     
+    # Filtered Data
+    miles_driven <- 15000
     
+    budget_pie <- university_data %>%  
+      filter(University == which_university) %>% 
+      mutate(total_Gas = Gas * miles_driven / 25/12) %>% 
+      select(appartment_mean_cost, Monthly_food, total_Gas)%>% 
+      pivot_longer(everything()) %>% 
+      filter(!grepl("^(Total|Remaining)", name))
     
+    # Prices for University 1
+    Price1 <- university_data %>%  
+      filter(University == which_university)
+    
+    # Prices for University 2
+    Price2 <- university_data %>%  
+      filter(University == which_university2)
+    
+    # limit the height of the chart
+    Max <- max(Price1$appartment_mean_cost, Price2$appartment_mean_cost) + 20
+    
+    # Bar Chart for University 1
+    ggplot(data = budget_pie, aes(x = name, y = value, fill = name)) +
+      geom_bar(stat="identity") +
+      geom_text(aes(label=value), vjust=1.6, color="black",
+                position = position_dodge(0.9), size=3.5) +
+      labs(x = "Monthly Expenses",
+           y = "Cost (in dollars)",
+           title = which_university) +
+      scale_x_discrete(labels=c("Rent", "Food", "Gas")) + 
+      scale_fill_manual(labels = c("Rent", "Food", "Gas"), values=c("#1884bf", "#e79f00", "#f0e441")) +
+      coord_cartesian(ylim = c(0,Max)) + 
+      theme_minimal() 
+  })
+  
+  # Compare 2
+  output$compare2 <-renderPlot({
+    which_university <- input$selected_univerity2
+    which_university2 <- input$selected_univerity1
+    
+    miles_driven <- 15000
+    
+    budget_pie <- university_data %>%  
+      filter(University == which_university) %>% 
+      mutate(total_Gas = Gas * miles_driven / 25/12) %>% 
+      select(appartment_mean_cost, Monthly_food, total_Gas)%>% 
+      pivot_longer(everything()) %>% 
+      filter(!grepl("^(Total|Remaining)", name))
+    
+    # Prices for University 2
+    Price1 <- university_data %>%  
+      filter(University == which_university)
+    
+    # Prices for University 1
+    Price2 <- university_data %>%  
+      filter(University == which_university2)
+    
+    # limit the height of the chart
+    Max <- max(Price1$appartment_mean_cost, Price2$appartment_mean_cost) + 20
+    
+    # Bar Chart for University 2
+    ggplot(data = budget_pie, aes(x = name, y = value, fill = name)) +
+      geom_bar(stat="identity") +
+      geom_text(aes(label=value), vjust=1.6, color="black",
+                position = position_dodge(0.9), size=3.5) +
+      labs(x = "Monthly Expenses",
+           y = "Cost (in dollars)",
+           title = which_university) +
+      scale_x_discrete(labels=c("Rent", "Food", "Gas")) + 
+      scale_fill_manual(labels = c("Rent", "Food", "Gas"), values=c("#1884bf", "#e79f00", "#f0e441")) +
+      coord_cartesian(ylim = c(0,Max)) + 
+      theme_minimal() 
+  })
+  
 }
