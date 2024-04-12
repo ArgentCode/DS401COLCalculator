@@ -1,120 +1,111 @@
-#
-# DS 401 Team 6: College Town Cost of Living Calculator
-# 
-# Sponsor: Dr. Ulrike Genschel
-# Instructor: Adisak Sukul
-# 
-# Team Members: Stephen Cooper, Vanessa Whitehead, Craig Orman, Gabriel Love
-#
-#
-
-# Define UI for application
-
 library("shinycustomloader")
 library("leaflet")
-library(shiny)
-library(shinythemes)
-library(shinydashboard)
-library(shinyWidgets)
+library("shiny")
+library("shinythemes")
+library("shinydashboard")
+library("shinyWidgets")
+library("bslib")
 
 navbarPage(
   "University Cost of Living Calculator",
-  theme = shinytheme("flatly"),
   
   # Page 1: University Cost
   tabPanel("Costs",
-           fluidPage( 
+           #theme = shinytheme("lumen"),
+           
+           fluidPage(
+             theme = shinytheme("sandstone"), # possible dashboard themes: paper, simplex, sandstone, yeti,
+             chooseSliderSkin("Flat", color = "#1884bf"), #slider theme
              
-             # Input: Owns A Car?
-             div(
+             
+             sidebarPanel(
+               # Input: Owns A Car?
+               
+               
                materialSwitch(inputId = "car_Owner",
                               label = "Car Owner",
                               value = TRUE,
                               status = "info",
                               inline = FALSE,
                               width = NULL),
-               style = "position:relative;z-index:10000;"
-             ),
-             
-             # Input: Miles Driven
-             div(
+               
+               # Input: Miles Driven
                sliderInput("miles",
-                           "Miles Driven:",
+                           "Expected Yearly Milage",
                            min = 0, max = 20000,
                            value = 15000),
-               style = "position:relative;z-index:10000;"
-             ),
-             
-             # Input: Miles Per Gallon
-             div(
+               
+               # Input: Miles Per Gallon
                sliderInput("mpg",
                            "Miles Per Gallon:",
                            min =10, max = 60,
                            value = 25),
-               style = "position:relative;z-index:10000;"
-             ),
-             
-             # Input: Grant
-             div(
+               
+               # Input: Grant
                sliderInput("grant",
-                           "Grant",
-                           min = 0, max = 20000,
+                           "Monthly Stipend",
+                           min = 0, max = 5000,
                            value = 0),
-               style = "position:relative;z-index:10000;"
-             ),
-             
-             
-             # Input: select university
-             div(
+               
+               # Input: select university
                selectInput(
                  "selected_univerity", 
                  "Select a University",
                  unique(university_data$University), 
                  selected = "Iowa State University"
-               ),style = "position:relative;z-index:10000;"
+               )
+               
              ),
              
-             # Output Charts
-              plotOutput("pi_chart"),
-              plotOutput("apartment_chart"),
-              plotOutput("food_chart"), 
-              plotOutput("gas_prices")
-             
-             )
-  ),
+             mainPanel(
+               
+               #card(card_header("Data", tableOutput("table"))),
+               card(card_header("Overall Monthly Expenses", plotOutput("pi_chart"))),
+               
+               layout_columns(
+                 card(card_header("Rent", plotOutput("apartment_chart"))),
+                 card(card_header("Food", plotOutput("food_chart"))),
+                 card(card_header("Gas", plotOutput("gas_prices")))
+               ),
+               
+               card(card_header("Stipend Coverage", plotOutput("grantCovered"))),
+               
+             ))),
   
   # Page 2: Comparing Universities 
   tabPanel("Comparing",
            fluidPage( 
-             # Input: select university 1
-             div(
+             sidebarPanel(
+               # Input: select university 1
                selectInput(
                  "selected_univerity1", 
                  "University 1",
                  unique(university_data$University), 
                  selected = "Iowa State University"
                ),
-               style = "position:relative;z-index:10000;"
-             ), 
-             
-             # Input: select university 2
-             div(
+               
+               # Input: select university 2
                selectInput(
                  "selected_univerity2", 
                  "University 2",
                  unique(university_data$University), 
                  selected = "Iowa State University"
-               )
-             ),
+               )),
              
-             # Output Charts
-             plotOutput("compare1"), 
-             plotOutput("compare2")
-           )
-  ),
+             mainPanel(
+               # Output Charts
+               
+               layout_columns(
+                 card(card_header(plotOutput("compare1"))),
+                 card(card_header(plotOutput("compare2")))
+               )
+             )
+           )),
   
   
   # Page 3: Charts
   tabPanel("More Analysis")
+  
+  
   
 )

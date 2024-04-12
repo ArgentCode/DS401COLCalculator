@@ -1,13 +1,3 @@
-#
-# DS 401 Team 6: College Town Cost of Living Calculator
-# 
-# Sponsor: Dr. Ulrike Genschel
-# Instructor: Adisak Sukul
-# 
-# Team Members: Stephen Cooper, Vanessa Whitehead, Craig Orman, Gabriel Love
-#
-#
-
 library("tidyverse")
 library("WDI")
 library("leaflet")
@@ -15,10 +5,26 @@ library("sf")
 library("rnaturalearthdata")
 
 
-university_data <- read_csv("universities.csv")
+source("data-processing.R", local = TRUE)
 
 function(input, output, session){
   
+  #Data 
+  output$table <- renderTable({
+    which_university <- input$selected_univerity
+    
+    university_details <- university_data %>%  
+      filter(University == which_university) %>% 
+      mutate(total_Gas = Gas * miles_driven / 25/12) %>% 
+      select(appartment_mean_cost, Monthly_food, Car_Maintenance, total_Gas)%>% 
+      pivot_longer(everything()) %>% 
+      filter(!grepl("^(Total|Remaining)", name))
+    
+    university_details
+  })
+  
+  
+  # pi chart - overall cost of living
   output$pi_chart <- renderPlot({
     which_university <- input$selected_univerity
     carOwner <- input$car_Owner
@@ -44,16 +50,15 @@ function(input, output, session){
         theme_void() +
         guides(fill = guide_legend(title = "Monthly Expenses")) +
         labs(x = "Monthly Expenses",
-             y = "Cost (in dollars)",
-             title = "Overall Cost") +
-        scale_fill_manual(labels = c("Rent", "Car Maintenance", "Food", "Gas"), values=c("#1884bf", "#d55e00", "#e79f00", "#f0e441"))
+             y = "Cost (in dollars)" #, title = "Cost of Living Pi Chart"
+        ) +
+        scale_fill_manual(labels = c("Rent", "Car Maintenance", "Food", "Gas"), values=c("#1884bf", "#ed624a", "#e79f00", "#f0e441"))
     }
     
     # Exclude Gas and Car Maintenance
     else{
       budget_pie <- university_data %>%  
         filter(University == which_university) %>% 
-        mutate(total_Gas = round(Gas * miles_driven / 25/12), 2) %>% 
         select(appartment_mean_cost, Monthly_food)%>% 
         pivot_longer(everything()) %>% 
         filter(!grepl("^(Total|Remaining)", name))
@@ -65,9 +70,9 @@ function(input, output, session){
                   position = position_stack(vjust = 0.7)) +
         theme_void() +
         guides(fill = guide_legend(title = "Expenses")) +
-        labs(x = "Expenses",
-             y = "Cost per Month (in dollars)",
-             title = "Overall Cost") +
+        labs(x = "Monthly Expenses",
+             y = "Cost (in dollars)", #title = "Pi Chart of Cost of Living"
+        ) +
         scale_fill_manual(labels = c("Rent", "Food"),values=c("#1884bf","#e79f00")) 
     }
     
@@ -88,7 +93,7 @@ function(input, output, session){
       theme_classic() +
       labs(x = "Monthly Rent",
            y = "count", 
-           title = "Distribution of Rent")
+           subtitle = "The red line marks where the selected \n university falls on the distribution \n for all universities.")
   })
   
   # Food
@@ -105,7 +110,7 @@ function(input, output, session){
       theme_classic() +
       labs(x = "Monthly Food Cost",
            y = "count", 
-           title = "Distribution of Food Costs")
+           subtitle = "The red line marks where the selected \n university falls on the distribution \n for all universities.")
   })
   
   
@@ -123,9 +128,83 @@ function(input, output, session){
       theme_classic() +
       labs(x = "Cost of Regular Gas (per gallon)",
            y = "count", 
-           title = "Distribution of the Cost of Gas")
+           subtitle = "The red line marks where the selected \n university falls on the distribution \n for all universities.")
   })
-
+  
+  
+  # Grant Coverage
+  output$grantCovered <- renderPlot({
+    which_university <- input$selected_univerity
+    carOwner <- input$car_Owner
+    
+    # Filtered Data
+    miles_driven <- input$miles
+    mpg <- input$mpg
+    grant <- input$grant
+    
+    # Include Gas and Car Maintenance
+    if(carOwner){ 
+      #Data
+      budget_pie <- university_data %>%  
+        filter(University == which_university) %>% 
+        mutate(total_Gas = round(Gas * miles_driven / mpg/12), 2) %>% 
+        select(appartment_mean_cost, Monthly_food, Car_Maintenance, total_Gas)%>% 
+        pivot_longer(everything()) %>% 
+        filter(!grepl("^(Total|Remaining)", name))
+      
+      # Chart
+      total_cost <- sum(budget_pie$value)
+      covered <- min(total_cost , grant)
+      leftover <- total_cost - covered
+      
+      df <- data_frame(value = c(leftover, covered),
+                       name = c("after grant", "covered"),
+                       something = c("", ""))
+      
+      ggplot(data=df, aes(fill=name, y=value, x=something)) +
+        geom_bar( position="stack", stat="identity") +
+        labs(x = "Coverage",
+             y = "Amount in Dollars", #title = "Amount Covered"
+        ) +
+        scale_fill_manual(labels = c( "Left Over", "Covered"), values=c("#ed624a", "#A1D0EA")) +
+        theme_minimal() +
+        geom_text(aes(label = value), size = 3, hjust = 2, vjust = 3, position = "stack")+
+        coord_flip()
+      
+    }
+    
+    # Exclude Gas and Car Maintenance
+    else{
+      # Data
+      budget_pie <- university_data %>%  
+        filter(University == which_university) %>% 
+        select(appartment_mean_cost, Monthly_food)%>% 
+        pivot_longer(everything()) %>% 
+        filter(!grepl("^(Total|Remaining)", name))
+      
+      # Charts
+      total_cost <- sum(budget_pie$value)
+      covered <- min(total_cost , grant)
+      leftover <- total_cost - covered
+      
+      df <- data_frame(value = c(leftover, covered),
+                       name = c("after grant", "covered"),
+                       something = c("", ""))
+      
+      ggplot(data=df, aes(fill=name, y=value, x=something)) +
+        geom_bar( position="stack", stat="identity") +
+        labs(x = "Coverage",
+             y = "Amount in Dollars", #title = "Amount Covered"
+        ) +
+        scale_fill_manual(labels = c( "Left Over", "Covered"), values=c("#ed624a", "#A1D0EA")) +
+        theme_minimal() +
+        geom_text(aes(label = value), size = 3, hjust = 2, vjust = 3, position = "stack")+
+        coord_flip()
+    }
+    
+    
+  })
+  
   
   # Compare 1
   output$compare1 <-renderPlot({
@@ -162,7 +241,7 @@ function(input, output, session){
            y = "Cost (in dollars)",
            title = which_university) +
       scale_x_discrete(labels=c("Rent", "Food", "Gas")) + 
-      scale_fill_manual(labels = c("Rent", "Food", "Gas"), values=c("#1884bf", "#e79f00", "#f0e441")) +
+      scale_fill_manual(labels = c("Rent", "Food", "Gas"), values=c("#A1D0EA", "#ed624a", "#f0e441")) +
       coord_cartesian(ylim = c(0,Max)) + 
       theme_minimal() 
   })
@@ -201,7 +280,7 @@ function(input, output, session){
            y = "Cost (in dollars)",
            title = which_university) +
       scale_x_discrete(labels=c("Rent", "Food", "Gas")) + 
-      scale_fill_manual(labels = c("Rent", "Food", "Gas"), values=c("#1884bf", "#e79f00", "#f0e441")) +
+      scale_fill_manual(labels = c("Rent", "Food", "Gas"), values=c("#A1D0EA", "#ed624a", "#f0e441")) +
       coord_cartesian(ylim = c(0,Max)) + 
       theme_minimal() 
   })
