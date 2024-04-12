@@ -12,10 +12,8 @@ source("data-processing.R", local = TRUE)
 function(input, output, session){
   
   #Data 
-  output$table <- renderTable(
+  output$table <- renderTable({
     
-    
-    {
     # Relevant Inputs
     which_university <- input$selected_univerity
     miles_driven <- input$miles
@@ -27,7 +25,7 @@ function(input, output, session){
     Uni_data <- university_data %>%  
       filter(University == which_university) %>% 
       mutate(total_Gas = Gas * miles_driven / mpg/12) %>% 
-      select(3, 11, 14, appartment_mean_cost, 19, 20, Monthly_food, Car_Maintenance, total_Gas)
+      select(`pretty name`, zip, appartment_mean_cost, `Appartment Min`, `Appartment Max`, Monthly_food, Car_Maintenance, total_Gas)
     
     if(carOwner){
       average <- round(Uni_data$appartment_mean_cost+Uni_data$Monthly_food + Uni_data$total_Gas + 66)

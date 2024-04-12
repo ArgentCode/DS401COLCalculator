@@ -5,6 +5,7 @@ library("shinythemes")
 library("shinydashboard")
 library("shinyWidgets")
 library("bslib")
+library(knitr)
 
 navbarPage(
   "University Cost of Living Calculator",
@@ -44,7 +45,7 @@ navbarPage(
                # Input: Grant
                sliderInput("grant",
                            "Monthly Stipend",
-                           min = 0, max = 5000,
+                           min = 0, max = 4200,
                            value = 0),
                
                # Input: select university
@@ -66,7 +67,7 @@ navbarPage(
                  card(card_header("Rent", plotOutput("apartment_chart"))),
                  card(card_header("Food", plotOutput("food_chart"))),
                  card(card_header("Gas", plotOutput("gas_prices")))
-               ),
+              ),
                
                card(card_header("Stipend Coverage", plotOutput("grantCovered"))),
                
