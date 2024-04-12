@@ -3,6 +3,8 @@ library("WDI")
 library("leaflet")
 library("sf")
 library("rnaturalearthdata")
+library("gt")
+library("glue")
 
 
 source("data-processing.R", local = TRUE)
@@ -10,17 +12,47 @@ source("data-processing.R", local = TRUE)
 function(input, output, session){
   
   #Data 
-  output$table <- renderTable({
+  output$table <- renderTable(
+    
+    
+    {
+    # Relevant Inputs
     which_university <- input$selected_univerity
+    miles_driven <- input$miles
+    mpg <- input$mpg
+    carOwner <- input$car_Owner
     
-    university_details <- university_data %>%  
+    
+    #Create the table
+    Uni_data <- university_data %>%  
       filter(University == which_university) %>% 
-      mutate(total_Gas = Gas * miles_driven / 25/12) %>% 
-      select(appartment_mean_cost, Monthly_food, Car_Maintenance, total_Gas)%>% 
-      pivot_longer(everything()) %>% 
-      filter(!grepl("^(Total|Remaining)", name))
+      mutate(total_Gas = Gas * miles_driven / mpg/12) %>% 
+      select(3, 11, 14, appartment_mean_cost, 19, 20, Monthly_food, Car_Maintenance, total_Gas)
     
-    university_details
+    if(carOwner){
+      average <- round(Uni_data$appartment_mean_cost+Uni_data$Monthly_food + Uni_data$total_Gas + 66)
+      min <- round(Uni_data$`Appartment Min`+Uni_data$Monthly_food + Uni_data$total_Gas + 66)
+      max <- round(Uni_data$`Appartment Max`+Uni_data$Monthly_food + Uni_data$total_Gas + 66)
+      range = glue("{min} - {max}") 
+      gasCost <- round(Uni_data$total_Gas)
+      maintenanceCost <- 66
+    }
+    else{
+      average <- round(Uni_data$appartment_mean_cost+Uni_data$Monthly_food)
+      min <- round(Uni_data$`Appartment Min`+Uni_data$Monthly_food)
+      max <- round(Uni_data$`Appartment Max`+Uni_data$Monthly_food)
+      range = glue("{min} - {max}") 
+      gasCost  = 0
+      maintenanceCost = 0
+    }
+    
+    data <- c("Range","Average Cost", "Breakdown: ", "Rent", "Food", "Gas", "Car Maintenance")
+    values <- c(range, average, " ", round(Uni_data$appartment_mean_cost), round(Uni_data$Monthly_food), gasCost, maintenanceCost)
+    Presentable_data <- data.frame(data, values)
+    
+    tab <- gt(data = Presentable_data, caption = which_university)
+    tab_header(tab, title = which_university, subtitle = glue("{Uni_data$`pretty name`} {Uni_data$zip}"))
+    
   })
   
   
@@ -69,7 +101,7 @@ function(input, output, session){
         geom_text(aes(label = value),
                   position = position_stack(vjust = 0.7)) +
         theme_void() +
-        guides(fill = guide_legend(title = "Expenses")) +
+        guides(fill = guide_legend(title = "Monthly Expenses")) +
         labs(x = "Monthly Expenses",
              y = "Cost (in dollars)", #title = "Pi Chart of Cost of Living"
         ) +

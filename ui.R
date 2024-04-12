@@ -59,7 +59,7 @@ navbarPage(
              
              mainPanel(
                
-               #card(card_header("Data", tableOutput("table"))),
+               card(card_header("Data", tableOutput("table"))),
                card(card_header("Overall Monthly Expenses", plotOutput("pi_chart"))),
                
                layout_columns(
