@@ -61,8 +61,8 @@ navbarPage(
              mainPanel(
                
                layout_columns(
-                 card(card_header("Data", tableOutput("table"))),
-                 card(card_header("Overall Monthly Expenses", plotOutput("pi_chart"))),
+                 card(height = 350, card_header(" ", tableOutput("table"))),
+                 card(height = 350, card_header("Overall Monthly Expenses", plotOutput("pi_chart"))),
                ),
                
                card(card_header("Map", plotlyOutput("distPlot"))),
