@@ -50,7 +50,7 @@ function(input, output, session){
     values <- c(range, average, " ", round(Uni_data$appartment_mean_cost), round(Uni_data$Monthly_food), gasCost, maintenanceCost)
     Presentable_data <- data.frame(data, values)
     
-    tab <- gt(data = Presentable_data, caption = which_university)
+    tab <- gt(data = Presentable_data)
     tab_header(tab, title = which_university, subtitle = glue("{Uni_data$`pretty name`} {Uni_data$zip}"))
     
   })
