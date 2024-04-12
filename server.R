@@ -5,11 +5,52 @@ library("sf")
 library("rnaturalearthdata")
 library("gt")
 library("glue")
+library(plotly)
+library(readxl)
 
 
 source("data-processing.R", local = TRUE)
 
 function(input, output, session){
+  
+  # Map
+  
+  output$distPlot <- renderPlotly({
+    
+    library(tidyverse)
+    library(plotly)
+    library(readxl)
+    
+    dat <- university_data %>% data.frame() %>% 
+      rename(Latitude = 'uni..LATITUDE', Longitude = 'uni..LONGITUDE', FixedName = pretty.name, CityPop = Pop..2020.Decennial.Census.) 
+    
+    
+    # geo styling
+    g <- list(
+      scope = 'usa',
+      projection = list(type = 'albers usa'),
+      showland = TRUE,
+      landcolor = toRGB("gray95"),
+      subunitcolor = toRGB("gray85"),
+      countrycolor = toRGB("gray85"),
+      countrywidth = 0.5,
+      subunitwidth = 0.5
+    )
+    
+    fig <- plot_geo(dat, lat = ~Latitude, lon = ~Longitude)
+    fig <- fig %>% add_markers(
+      text = ~paste(University, FixedName, paste0("City Population: ",prettyNum(CityPop, big.mark = ",", scientific = FALSE)), sep="\n"),
+      color = "red", symbol = I("square"), size = I(8), hoverinfo = "text"
+    )
+    fig <- fig %>% layout(
+      showlegend = F,
+      title = 'US College Towns<br />(Hover for info)', geo = g
+    )
+    
+    ggplotly(fig)
+  })
+  
+  
   
   #Data 
   output$table <- renderTable({
@@ -52,6 +93,8 @@ function(input, output, session){
     tab_header(tab, title = which_university, subtitle = glue("{Uni_data$`pretty name`} {Uni_data$zip}"))
     
   })
+  
+  
   
   
   # pi chart - overall cost of living
@@ -101,7 +144,7 @@ function(input, output, session){
         theme_void() +
         guides(fill = guide_legend(title = "Monthly Expenses")) +
         labs(x = "Monthly Expenses",
-             y = "Cost (in dollars)", #title = "Pi Chart of Cost of Living"
+             y = "Cost (in dollars)" #, title = "Pi Chart of Cost of Living"
         ) +
         scale_fill_manual(labels = c("Rent", "Food"),values=c("#1884bf","#e79f00")) 
     }
@@ -194,7 +237,7 @@ function(input, output, session){
       ggplot(data=df, aes(fill=name, y=value, x=something)) +
         geom_bar( position="stack", stat="identity") +
         labs(x = "Coverage",
-             y = "Amount in Dollars", #title = "Amount Covered"
+             y = "Amount in Dollars" #title = "Amount Covered"
         ) +
         scale_fill_manual(labels = c( "Left Over", "Covered"), values=c("#ed624a", "#A1D0EA")) +
         theme_minimal() +
@@ -224,7 +267,7 @@ function(input, output, session){
       ggplot(data=df, aes(fill=name, y=value, x=something)) +
         geom_bar( position="stack", stat="identity") +
         labs(x = "Coverage",
-             y = "Amount in Dollars", #title = "Amount Covered"
+             y = "Amount in Dollars" #, title = "Amount Covered"
         ) +
         scale_fill_manual(labels = c( "Left Over", "Covered"), values=c("#ed624a", "#A1D0EA")) +
         theme_minimal() +

@@ -60,8 +60,12 @@ navbarPage(
              
              mainPanel(
                
-               card(card_header("Data", tableOutput("table"))),
-               card(card_header("Overall Monthly Expenses", plotOutput("pi_chart"))),
+               layout_columns(
+                 card(card_header("Data", tableOutput("table"))),
+                 card(card_header("Overall Monthly Expenses", plotOutput("pi_chart"))),
+               ),
+               
+               card(card_header("Map", plotlyOutput("distPlot"))),
                
                layout_columns(
                  card(card_header("Rent", plotOutput("apartment_chart"))),
