@@ -70,7 +70,7 @@ navbarPage(
                layout_columns(
                  card(card_header("Rent", plotOutput("apartment_chart"))),
                  card(card_header("Food", plotOutput("food_chart"))),
-                 card(card_header("Gas", plotOutput("gas_prices")))
+                 card(card_header("Gas", plotOutput("gas_prices"))),
               ),
                
                card(card_header("Stipend Coverage", plotOutput("grantCovered"))),

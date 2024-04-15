@@ -16,5 +16,5 @@ output: html_document
 [4] American Automobile Association. (2016). *What Does It Cost to Own and Operate a Car.* AAA Automotive. https://www.aaa.com/autorepair/articles/What-Does-It-Cost-To-Own-And-Operate-A-Car 
  
 
-Webscraped price data from Target.com, Apartments.com, and GasBuddy.com 
+Web-scraped price data from Target.com, Apartments.com, and GasBuddy.com 
 
