@@ -8,6 +8,8 @@ library("reactable")
 library(magrittr)
 library(knitr)
 library(formattable)
+library(mapview)
+library(RColorBrewer)
 
 university_data <- read_csv("universities.csv")
 
@@ -138,4 +140,8 @@ tab
 tab_header(tab, title = which_university, subtitle = glue("{Uni_data$`pretty name`} {Uni_data$zip}"))
 
 
+total_data <- university_data %>%  mutate(total_cost =  appartment_mean_cost + Monthly_food)
 
+total_data <- university_data %>%  mutate(total_cost = Gas * miles_driven / mpg/12 + 66+ appartment_mean_cost + Monthly_food)
+mapviewOptions(legend.pos= "bottomright")
+mapview(total_data, xcol = "uni. LONGITUDE", ycol = "uni. LATITUDE", crs = 4269, grid = FALSE, zcol= "total_cost", alpha = 0.5)

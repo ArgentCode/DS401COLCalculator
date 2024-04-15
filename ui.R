@@ -112,14 +112,17 @@ navbarPage(
   
   
   # Page 3: Charts
-  tabPanel("More Analysis"), 
+  tabPanel("More Analysis", fluidPage( 
+    mainPanel( 
+      #leafletOutput(outputId = "map_pharmacy"),
+    )
+  )),
   
   tabPanel("Works Cited",  fluidPage( 
     mainPanel( 
-    includeMarkdown("WorksCited.Rmd")
+      includeMarkdown("WorksCited.Rmd")
+      
+      )
     )
     )
-    )
-  
-  
 )

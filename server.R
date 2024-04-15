@@ -7,7 +7,7 @@ library("gt")
 library("glue")
 library(plotly)
 library(readxl)
-
+library(readr)
 
 source("data-processing.R", local = TRUE)
 
@@ -17,13 +17,8 @@ function(input, output, session){
   
   output$distPlot <- renderPlotly({
     
-    library(tidyverse)
-    library(plotly)
-    library(readxl)
-    
-    dat <- university_data %>% data.frame() %>% 
-      rename(Latitude = 'uni..LATITUDE', Longitude = 'uni..LONGITUDE', FixedName = pretty.name, CityPop = Pop..2020.Decennial.Census.) 
-    
+    dat <- data.frame(university_data) %>% 
+      rename(Latitude = 'uni_lat', Longitude = 'uni_long', FixedName = pretty_name, CityPop = city_pop)
     
     # geo styling
     g <- list(
@@ -39,8 +34,8 @@ function(input, output, session){
     
     fig <- plot_geo(dat, lat = ~Latitude, lon = ~Longitude)
     fig <- fig %>% add_markers(
-      text = ~paste(University, FixedName, paste0("City Population: ",prettyNum(CityPop, big.mark = ",", scientific = FALSE)), sep="\n"),
-      color = "red", symbol = I("circle"), size = I(8), hoverinfo = "text"
+      text = ~paste(University, FixedName, paste0("City Population: ", prettyNum(CityPop, big.mark = ",", scientific = FALSE)), sep="\n"),
+      symbol = I("circle"), size = I(8), hoverinfo = "text", color = "red"
     )
     fig <- fig %>% layout(
       showlegend = F,
@@ -66,20 +61,20 @@ function(input, output, session){
     Uni_data <- university_data %>%  
       filter(University == which_university) %>% 
       mutate(total_Gas = Gas * miles_driven / mpg/12) %>% 
-      select(`pretty name`, zip, appartment_mean_cost, `Appartment Min`, `Appartment Max`, Monthly_food, Car_Maintenance, total_Gas)
+      select(pretty_name, zip, appartment_mean_cost, Appartment_Min, Appartment_Max, Monthly_food, Car_Maintenance, total_Gas)
     
     if(carOwner){
       average <- round(Uni_data$appartment_mean_cost+Uni_data$Monthly_food + Uni_data$total_Gas + 66)
-      min <- round(Uni_data$`Appartment Min`+Uni_data$Monthly_food + Uni_data$total_Gas + 66)
-      max <- round(Uni_data$`Appartment Max`+Uni_data$Monthly_food + Uni_data$total_Gas + 66)
+      min <- round(Uni_data$Appartment_Min +Uni_data$Monthly_food + Uni_data$total_Gas + 66)
+      max <- round(Uni_data$Appartment_Max +Uni_data$Monthly_food + Uni_data$total_Gas + 66)
       range = glue("{min} - {max}") 
       gasCost <- round(Uni_data$total_Gas)
       maintenanceCost <- 66
     }
     else{
       average <- round(Uni_data$appartment_mean_cost+Uni_data$Monthly_food)
-      min <- round(Uni_data$`Appartment Min`+Uni_data$Monthly_food)
-      max <- round(Uni_data$`Appartment Max`+Uni_data$Monthly_food)
+      min <- round(Uni_data$Appartment_Min +Uni_data$Monthly_food)
+      max <- round(Uni_data$Appartment_Max +Uni_data$Monthly_food)
       range = glue("{min} - {max}") 
       gasCost  = 0
       maintenanceCost = 0
@@ -90,7 +85,7 @@ function(input, output, session){
     Presentable_data <- data.frame(data, values)
     
     tab <- gt(data = Presentable_data)
-    tab_header(tab, title = which_university, subtitle = glue("{Uni_data$`pretty name`} {Uni_data$zip}"))
+    tab_header(tab, title = which_university, subtitle = glue("{Uni_data$pretty_name} {Uni_data$zip}"))
     
   })
   
@@ -161,7 +156,7 @@ function(input, output, session){
     Value <- Price$appartment_mean_cost
     
     ggplot(university_data, aes(x = appartment_mean_cost)) +
-      geom_histogram( fill= "#A1D0EA") +
+      geom_histogram( fill= "#A1D0EA", bins=20) +
       geom_vline(xintercept=Value, color="red") +
       theme_classic() +
       labs(x = "Monthly Rent",
@@ -178,7 +173,7 @@ function(input, output, session){
     Value <- foodPrice$Monthly_food
     
     ggplot(university_data, aes(x = Monthly_food)) +
-      geom_histogram( fill= "#FFF157") +
+      geom_histogram( fill= "#FFF157", bins=20) +
       geom_vline(xintercept=Value, color="red") +
       theme_classic() +
       labs(x = "Monthly Food Cost",
@@ -196,7 +191,7 @@ function(input, output, session){
     Value <- Price$Gas
     
     ggplot(university_data, aes(x = Gas)) +
-      geom_histogram( fill= "#f5c77e") +
+      geom_histogram( fill= "#f5c77e", bins =20) +
       geom_vline(xintercept=Value, color="red") +
       theme_classic() +
       labs(x = "Cost of Regular Gas (per gallon)",
@@ -283,13 +278,12 @@ function(input, output, session){
   output$compare1 <-renderPlot({
     which_university <- input$selected_univerity1
     which_university2 <- input$selected_univerity2
-    
-    # Filtered Data
-    miles_driven <- 15000
+    miles_driven <- input$miles
+    mpg <- input$mpg
     
     budget_pie <- university_data %>%  
       filter(University == which_university) %>% 
-      mutate(total_Gas = Gas * miles_driven / 25/12) %>% 
+      mutate(total_Gas = Gas * miles_driven / mpg/12) %>% 
       select(appartment_mean_cost, Monthly_food, total_Gas)%>% 
       pivot_longer(everything()) %>% 
       filter(!grepl("^(Total|Remaining)", name))
@@ -323,12 +317,12 @@ function(input, output, session){
   output$compare2 <-renderPlot({
     which_university <- input$selected_univerity2
     which_university2 <- input$selected_univerity1
-    
-    miles_driven <- 15000
+    miles_driven <- input$miles
+    mpg <- input$mpg
     
     budget_pie <- university_data %>%  
       filter(University == which_university) %>% 
-      mutate(total_Gas = Gas * miles_driven / 25/12) %>% 
+      mutate(total_Gas = Gas * miles_driven / mpg/12) %>% 
       select(appartment_mean_cost, Monthly_food, total_Gas)%>% 
       pivot_longer(everything()) %>% 
       filter(!grepl("^(Total|Remaining)", name))
@@ -357,5 +351,9 @@ function(input, output, session){
       coord_cartesian(ylim = c(0,Max)) + 
       theme_minimal() 
   })
+  
+  
+  
+  
   
 }
