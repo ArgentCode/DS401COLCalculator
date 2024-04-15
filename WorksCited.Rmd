@@ -1,0 +1,20 @@
+---
+title: "Works Cited"
+output: html_document
+---
+
+
+[1] American Automobile Association. (2023, August). *Your driving costs 2023.* Your Driving Costs. https://newsroom.aaa.com/wp-content/uploads/2023/08/YDC-Fact-Sheet-FINAL-8.30.23-1.pdf 
+ 
+
+[2] Federal Highway Administration. (2022, May 31). *Average Annual Miles per Driver by Age Group.* US Department of Transportation. https://www.fhwa.dot.gov/ohim/onh00/bar8.htm 
+
+
+[3] Corporate Average Fuel Economy Public Information Center. (2023, May 5). *CAFE Public Information Center Fleet Performance Report.* US Department of Transportation https://explore.dot.gov/t/NHTSA-CAFE/views/CAFEPICReport-FleetPerformance/FleetPerformanceReportDashboard 
+ 
+
+[4] American Automobile Association. (2016). *What Does It Cost to Own and Operate a Car.* AAA Automotive. https://www.aaa.com/autorepair/articles/What-Does-It-Cost-To-Own-And-Operate-A-Car 
+ 
+
+Webscraped price data from Target.com, Apartments.com, and GasBuddy.com 
+

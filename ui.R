@@ -111,8 +111,12 @@ navbarPage(
   # Page 3: Charts
   tabPanel("More Analysis"), 
   
-  tabPanel("Works Cited")
-  
+  tabPanel("Works Cited",  fluidPage( 
+    mainPanel( 
+    includeMarkdown("WorksCited.Rmd")
+    )
+    )
+    )
   
   
 )
