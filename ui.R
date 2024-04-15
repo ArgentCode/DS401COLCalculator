@@ -109,7 +109,9 @@ navbarPage(
   
   
   # Page 3: Charts
-  tabPanel("More Analysis")
+  tabPanel("More Analysis"), 
+  
+  tabPanel("Works Cited")
   
   
   

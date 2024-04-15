@@ -31,8 +31,8 @@ function(input, output, session){
       projection = list(type = 'albers usa'),
       showland = TRUE,
       landcolor = toRGB("gray95"),
-      subunitcolor = toRGB("gray85"),
-      countrycolor = toRGB("gray85"),
+      subunitcolor = toRGB("gray65"),
+      countrycolor = toRGB("gray65"),
       countrywidth = 0.5,
       subunitwidth = 0.5
     )
@@ -40,7 +40,7 @@ function(input, output, session){
     fig <- plot_geo(dat, lat = ~Latitude, lon = ~Longitude)
     fig <- fig %>% add_markers(
       text = ~paste(University, FixedName, paste0("City Population: ",prettyNum(CityPop, big.mark = ",", scientific = FALSE)), sep="\n"),
-      color = "red", symbol = I("square"), size = I(8), hoverinfo = "text"
+      color = "red", symbol = I("circle"), size = I(8), hoverinfo = "text"
     )
     fig <- fig %>% layout(
       showlegend = F,
