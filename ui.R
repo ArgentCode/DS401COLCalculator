@@ -6,6 +6,9 @@ library("shinydashboard")
 library("shinyWidgets")
 library("bslib")
 library(knitr)
+library(tidyverse)
+library(plotly)
+library(readxl)
 
 navbarPage(
   "University Cost of Living Calculator",
