@@ -32,9 +32,9 @@ function(input, output, session){
       scope = 'usa',
       projection = list(type = 'albers usa'),
       showland = TRUE,
-      landcolor = toRGB("gray95"),
-      subunitcolor = toRGB("gray65"),
-      countrycolor = toRGB("gray65"),
+      landcolor = toRGB("gray96"),
+      subunitcolor = toRGB("gray75"),
+      countrycolor = toRGB("gray75"),
       countrywidth = 0.5,
       subunitwidth = 0.5
     )
@@ -42,7 +42,7 @@ function(input, output, session){
     fig <- plot_geo(dat, lat = ~Latitude, lon = ~Longitude)
     fig <- fig %>% add_markers(
       text = ~paste(University, FixedName, paste0("City Population: ", prettyNum(CityPop, big.mark = ",", scientific = FALSE)), sep="\n"),
-      symbol = I("circle"), size = I(8), hoverinfo = "text"
+      symbol = I("circle"), size = I(8), hoverinfo = "text", color="#ed624a", colors="#ed624a"
     )
     fig <- fig %>% layout(
       showlegend = F,
@@ -241,7 +241,7 @@ function(input, output, session){
         labs(x = "Coverage",
              y = "Amount in Dollars" #title = "Amount Covered"
         ) +
-        scale_fill_manual(labels = c( "Left Over", "Covered"), values=c("#ed624a", "#A1D0EA")) +
+        scale_fill_manual(labels = c( "Not Covered By Stipend", "Covered"), values=c("#ed624a", "#A1D0EA")) +
         theme_minimal() +
         geom_text(aes(label = value), size = 3, hjust = 2, vjust = 3, position = "stack")+
         coord_flip()
@@ -271,7 +271,7 @@ function(input, output, session){
         labs(x = "Coverage",
              y = "Amount in Dollars" #, title = "Amount Covered"
         ) +
-        scale_fill_manual(labels = c( "Left Over", "Covered"), values=c("#ed624a", "#A1D0EA")) +
+        scale_fill_manual(labels = c( "Not Covered By Stipend", "Covered"), values=c("#ed624a", "#A1D0EA")) +
         theme_minimal() +
         geom_text(aes(label = value), size = 3, hjust = 2, vjust = 3, position = "stack")+
         coord_flip()

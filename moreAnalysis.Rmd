@@ -4,26 +4,6 @@ author: "Vanessa Whitehead"
 date: "2024-04-16"
 output: html_document
 ---
-```{r include=FALSE}
-library(shinycustomloader)
-library(leaflet)
-library(shiny)
-library(shinythemes)
-library(shinydashboard)
-library(shinyWidgets)
-library(bslib)
-library(knitr)
-library(tidyverse)
-library(plotly)
-library(readxl)
-library(mapview)
-library(ggplot2)
-library(sp)
-library(gstat)
-library(RMySQL)
-library(plainview)
-library(readr)
-```
 
 This map shows the estimated monthly costs for each college town. These estimates are based on inputs for mpg and miles driven entered on the first page. 
 
@@ -41,7 +21,10 @@ Besides the map above, the graphs on this page will **not** be based on input se
 - 
 
 
-```{r loadData, include=FALSE}
+```{r include=FALSE}
+library(readr)
+library(dplyr)
+
 university_data <- read_csv("https://raw.githubusercontent.com/ArgentCode/DS401COLCalculator/main/universities.csv", show_col_types = FALSE) %>% 
   select(pretty_name, 
          zip, 

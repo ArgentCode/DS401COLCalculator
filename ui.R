@@ -51,30 +51,34 @@ navbarPage(
                            min =10, max = 60,
                            value = 25),
                
-               # Input: Grant
-               sliderInput("grant",
-                           "Monthly Stipend",
-                           min = 0, max = 4200,
-                           value = 0),
-               
                # Input: select university
                selectInput(
                  "selected_univerity", 
                  "Select a University",
                  unique(university_data$University), 
                  selected = "Iowa State University"
-               )
+               ), 
                
+               plotOutput("pi_chart"),
+               tableOutput("table"),
+               
+               # Input: Grant
+               sliderInput("grant",
+                           "Monthly Stipend",
+                           min = 0, max = 4200,
+                           value = 0),
              ),
              
              mainPanel(
                
-               layout_columns(
-                 card(height = 350, card_header(" ", tableOutput("table"))),
-                 card(height = 350, card_header("Overall Monthly Expenses", plotOutput("pi_chart"))),
-               ),
+               #layout_columns(
+                 #card(height = 350, card_header(" ", tableOutput("table"))),
+                 #card(height = 350, card_header("Overall Monthly Expenses", plotOutput("pi_chart"))),
+                 #card(card_header("Map", plotlyOutput("distPlot"))),
+               #),
                
                card(card_header("Map", plotlyOutput("distPlot"))),
+               #card(height = 350, card_header("Overall Monthly Expenses", plotOutput("pi_chart"))),
                
                layout_columns(
                  card(card_header("Rent", plotOutput("apartment_chart"))),
