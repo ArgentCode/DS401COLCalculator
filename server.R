@@ -1,17 +1,33 @@
-library("tidyverse")
-library("WDI")
-library("leaflet")
-library("sf")
-library("rnaturalearthdata")
-library("gt")
-library("glue")
+library(tidyverse)
+library(WDI)
+library(leaflet)
+library(sf)
+library(rnaturalearthdata)
+library(gt)
+library(glue)
 library(plotly)
 library(readxl)
 library(readr)
+library(mapview)
+library(ggplot2)
+library(sp)
+library(gstat)
+library(RMySQL)
+library(plainview)
 
 source("data-processing.R", local = TRUE)
 
 function(input, output, session){
+  
+  
+  driverData <- reactive({
+    miles_driven <- input$miles
+    mpg <- input$mpg
+    total_data <- university_data %>%  mutate(avg_cost = Gas * miles_driven / mpg/12 + 66+ appartment_mean_cost + Monthly_food)  %>% mutate(info = glue("{University}\n ${avg_cost}"))
+    mapviewOptions(legend.pos= "bottomright")
+    mapview(total_data, xcol = "uni_long", ycol = "uni_lat", crs = 4269, grid = FALSE, zcol= "avg_cost", alpha = 0.5, label = "info")
+  })
+  
   
   # Map
   
@@ -35,7 +51,7 @@ function(input, output, session){
     fig <- plot_geo(dat, lat = ~Latitude, lon = ~Longitude)
     fig <- fig %>% add_markers(
       text = ~paste(University, FixedName, paste0("City Population: ", prettyNum(CityPop, big.mark = ",", scientific = FALSE)), sep="\n"),
-      symbol = I("circle"), size = I(8), hoverinfo = "text", color = "red"
+      symbol = I("circle"), size = I(8), hoverinfo = "text"
     )
     fig <- fig %>% layout(
       showlegend = F,
@@ -225,7 +241,7 @@ function(input, output, session){
       covered <- min(total_cost , grant)
       leftover <- total_cost - covered
       
-      df <- data_frame(value = c(leftover, covered),
+      df <- tibble(value = c(leftover, covered),
                        name = c("after grant", "covered"),
                        something = c("", ""))
       
@@ -255,7 +271,7 @@ function(input, output, session){
       covered <- min(total_cost , grant)
       leftover <- total_cost - covered
       
-      df <- data_frame(value = c(leftover, covered),
+      df <- tibble(value = c(leftover, covered),
                        name = c("after grant", "covered"),
                        something = c("", ""))
       
@@ -353,7 +369,17 @@ function(input, output, session){
   })
   
   
+  #Map View
+  repInput <- reactive({
+    miles_driven <- input$miles
+    mpg <- input$mpg
+    total_data <- university_data %>%  mutate(avg_cost = Gas * miles_driven / mpg/12 + 66+ appartment_mean_cost + Monthly_food)  %>% mutate(info = glue("{University}\n ${avg_cost}"))
+    mapviewOptions(legend.pos= "bottomright")
+    mapview(total_data, xcol = "uni_long", ycol = "uni_lat", crs = 4269, grid = FALSE, zcol= "avg_cost", alpha = 0.5, label = "info")
+  })
   
-  
+  output$mapplot <- renderLeaflet({
+    repInput()@map %>% setView(-96, 39.1, zoom = 3)
+  })
   
 }

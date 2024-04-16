@@ -1,14 +1,20 @@
-library("shinycustomloader")
-library("leaflet")
-library("shiny")
-library("shinythemes")
-library("shinydashboard")
-library("shinyWidgets")
-library("bslib")
+library(shinycustomloader)
+library(leaflet)
+library(shiny)
+library(shinythemes)
+library(shinydashboard)
+library(shinyWidgets)
+library(bslib)
 library(knitr)
 library(tidyverse)
 library(plotly)
 library(readxl)
+library(mapview)
+library(ggplot2)
+library(sp)
+library(gstat)
+library(RMySQL)
+library(plainview)
 
 navbarPage(
   "University Cost of Living Calculator",
@@ -114,7 +120,7 @@ navbarPage(
   # Page 3: Charts
   tabPanel("More Analysis", fluidPage( 
     mainPanel( 
-      #leafletOutput(outputId = "map_pharmacy"),
+      leafletOutput("mapplot")
     )
   )),
   

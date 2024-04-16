@@ -142,6 +142,9 @@ tab_header(tab, title = which_university, subtitle = glue("{Uni_data$`pretty nam
 
 total_data <- university_data %>%  mutate(total_cost =  appartment_mean_cost + Monthly_food)
 
-total_data <- university_data %>%  mutate(total_cost = Gas * miles_driven / mpg/12 + 66+ appartment_mean_cost + Monthly_food)
+total_data <- university_data %>%  mutate(avg_cost = Gas * miles_driven / mpg/12 + 66+ appartment_mean_cost + Monthly_food)
 mapviewOptions(legend.pos= "bottomright")
-mapview(total_data, xcol = "uni. LONGITUDE", ycol = "uni. LATITUDE", crs = 4269, grid = FALSE, zcol= "total_cost", alpha = 0.5)
+
+mapview(total_data, xcol = "uni_long", ycol = "uni_lat", crs = 4269, grid = FALSE, zcol= "avg_cost", alpha = 0.5, label = "University") 
+
+
