@@ -1,0 +1,74 @@
+---
+title: "DataExploration"
+author: "Vanessa Whitehead"
+date: "2024-04-16"
+output: html_document
+---
+```{r include=FALSE}
+library(shinycustomloader)
+library(leaflet)
+library(shiny)
+library(shinythemes)
+library(shinydashboard)
+library(shinyWidgets)
+library(bslib)
+library(knitr)
+library(tidyverse)
+library(plotly)
+library(readxl)
+library(mapview)
+library(ggplot2)
+library(sp)
+library(gstat)
+library(RMySQL)
+library(plainview)
+library(readr)
+```
+
+This map shows the estimated monthly costs for each college town. These estimates are based on inputs for mpg and miles driven entered on the first page. 
+
+## More Analysis
+
+Besides the map above, the graphs on this page will **not** be based on input selected on the front page. 
+
+**The Variables**
+
+- **Rent**: webscrapped from Appartments.com
+- **Gas Costs**:  webscrapped from GasBuddy.com
+- **Mpg**: we will use ___. This is based on the average mile per gallon [citation]. 
+- **Miles driven**: We are also using the estimated value __ for miles driven. [citation]
+- **Maintenance costs**: are based on average maintenance costs from 
+- 
+
+
+```{r loadData, include=FALSE}
+university_data <- read_csv("https://raw.githubusercontent.com/ArgentCode/DS401COLCalculator/main/universities.csv", show_col_types = FALSE) %>% 
+  select(pretty_name, 
+         zip, 
+         appartment_mean_cost, 
+         Appartment_Min, 
+         Appartment_Max, 
+         Monthly_food, 
+         Car_Maintenance, 
+         Gas, 
+         uni_lat,
+         uni_long,
+         University,
+         undergrad_pop, 
+         city_pop,
+         Car_Maintenance)
+```
+
+```{r cars}
+head(university_data)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

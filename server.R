@@ -20,15 +20,6 @@ source("data-processing.R", local = TRUE)
 function(input, output, session){
   
   
-  driverData <- reactive({
-    miles_driven <- input$miles
-    mpg <- input$mpg
-    total_data <- university_data %>%  mutate(avg_cost = Gas * miles_driven / mpg/12 + 66+ appartment_mean_cost + Monthly_food)  %>% mutate(info = glue("{University}\n ${avg_cost}"))
-    mapviewOptions(legend.pos= "bottomright")
-    mapview(total_data, xcol = "uni_long", ycol = "uni_lat", crs = 4269, grid = FALSE, zcol= "avg_cost", alpha = 0.5, label = "info")
-  })
-  
-  
   # Map
   
   output$distPlot <- renderPlotly({

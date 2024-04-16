@@ -120,7 +120,8 @@ navbarPage(
   # Page 3: Charts
   tabPanel("More Analysis", fluidPage( 
     mainPanel( 
-      leafletOutput("mapplot")
+      card(card_header(leafletOutput("mapplot"))),
+      includeMarkdown("moreAnalysis.Rmd")
     )
   )),
   
