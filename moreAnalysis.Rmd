@@ -5,47 +5,26 @@ date: "2024-04-16"
 output: html_fragment
 ---
 
-This map shows the estimated monthly costs for each college town. These estimates are based on inputs for mpg and miles driven entered on the first page. 
+This map shows the estimated monthly costs for each college town. These estimates are based on inputs for mpg and miles driven entered on the first page. The graphs below do *not* use the same inputs.
 
 ## More Analysis
 
-Besides the map above, the graphs on this page will **not** be based on input selected on the front page. 
+#### Note: The graphs below will not be based on any inputs selected on the front page. 
+
 
 **The Variables**
 
-- **Rent**: webscrapped from Appartments.com
-- **Gas Costs**:  webscrapped from GasBuddy.com
-- **Mpg**: we will use ___. This is based on the average mile per gallon [citation]. 
-- **Miles driven**: We are also using the estimated value __ for miles driven. [citation]
-- **Maintenance costs**: are based on average maintenance costs from 
-- 
+- **Rent**: webscraped from Apartments.com on 5 April 2024 
+
+- **Gas Costs**:  webscraped from GasBuddy.com on 5 March 2024
+
+- **Mpg**: We are using a calculated average 29.7875 MPG. This is based on the Department of Transportation's CAFE PIC Fleet Performance Report as of 31 May 2023. This is a fleet performance average for all cars manufactured from model year 2004 to 2019.
 
 
-```{r include=FALSE}
-library(readr)
-library(dplyr)
+- **Miles driven**: We are also using an estimate 15,000 annual miles driven. This is a commonly cited annual mileage, and the average annual miles driven for motorists aged 20-34 is 15,094 according to a report by the Federal Highway Administration.
 
-university_data <- read_csv("https://raw.githubusercontent.com/ArgentCode/DS401COLCalculator/main/universities.csv", show_col_types = FALSE) %>% 
-  select(pretty_name, 
-         appartment_mean_cost, Appartment_Min, Appartment_Max, 
-         Monthly_food, 
-         Car_Maintenance, Gas, 
-         uni_lat, uni_long, zip,
-         University,
-         undergrad_pop, city_pop
-         )
-```
 
-```{r cars}
-head(university_data)
-```
+- **Maintenance costs**: are based on average regular maintenance costs according to a 2016 article from AAA, estimated at $66 a month. This does not factor in any unexpected repair costs.
 
-## Including Plots
+- **Food costs** are based on the local prices of selected food items at each town's local Target, scraped from Target.com on 30 March 2024
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
