@@ -120,7 +120,8 @@ navbarPage(
   tabPanel("More Analysis", fluidPage( 
     mainPanel( 
       card(card_header(leafletOutput("mapplot"))),
-      includeMarkdown("moreAnalysis.Rmd")
+      #includeMarkdown("moreAnalysis.Rmd") # Was messing up the formatting
+      includeHTML("moreAnalysis.html")
     )
   )),
   

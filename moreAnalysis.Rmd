@@ -2,7 +2,7 @@
 title: "DataExploration"
 author: "Vanessa Whitehead"
 date: "2024-04-16"
-output: html_document
+output: html_fragment
 ---
 
 This map shows the estimated monthly costs for each college town. These estimates are based on inputs for mpg and miles driven entered on the first page. 
