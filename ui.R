@@ -67,6 +67,7 @@ navbarPage(
              ),
              
              mainPanel(
+               #Selected University
                
                #Map
                card(max_height = 350, plotlyOutput("distPlot")),
