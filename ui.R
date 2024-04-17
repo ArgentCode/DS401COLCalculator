@@ -29,9 +29,15 @@ navbarPage(
              
              
              sidebarPanel(
+               # Input: select university
+               selectInput(
+                 "selected_univerity", 
+                 "Select a University",
+                 unique(university_data$University), 
+                 selected = "Iowa State University"
+               ), 
+               
                # Input: Owns A Car?
-               
-               
                materialSwitch(inputId = "car_Owner",
                               label = "Car Owner",
                               value = TRUE,
@@ -50,44 +56,33 @@ navbarPage(
                            "Miles Per Gallon:",
                            min =10, max = 60,
                            value = 25),
-               
-               # Input: select university
-               selectInput(
-                 "selected_univerity", 
-                 "Select a University",
-                 unique(university_data$University), 
-                 selected = "Iowa State University"
-               ), 
-               
-               plotOutput("pi_chart"),
+              
                tableOutput("table"),
                
                # Input: Grant
                sliderInput("grant",
                            "Monthly Stipend",
-                           min = 0, max = 4200,
-                           value = 0),
+                           min = 0, max = 4800,
+                           value = 0)
              ),
              
              mainPanel(
                
-               #layout_columns(
-                 #card(height = 350, card_header(" ", tableOutput("table"))),
-                 #card(height = 350, card_header("Overall Monthly Expenses", plotOutput("pi_chart"))),
-                 #card(card_header("Map", plotlyOutput("distPlot"))),
-               #),
+               #Map
+               card(max_height = 350, plotlyOutput("distPlot")),
                
-               card(card_header("Map", plotlyOutput("distPlot"))),
-               #card(height = 350, card_header("Overall Monthly Expenses", plotOutput("pi_chart"))),
+               #Pi chart
+               card(max_height = 250, card_header("Overall Costs"), plotOutput("pi_chart")),
                
+               #Histograms
                layout_columns(
-                 card(card_header("Rent", plotOutput("apartment_chart"))),
-                 card(card_header("Food", plotOutput("food_chart"))),
-                 card(card_header("Gas", plotOutput("gas_prices"))),
+                 card(max_height = 300, card_header("Rent"), plotOutput("apartment_chart")),
+                 card(max_height = 300, card_header("Food"), plotOutput("food_chart")),
+                 card(max_height = 300, card_header("Gas"), plotOutput("gas_prices"))
               ),
                
-               card(card_header("Stipend Coverage", plotOutput("grantCovered"))),
-               
+              #Stipend
+               card(max_height = 200, card_header("Stipend Coverage"), plotOutput("grantCovered"))
              ))),
   
   # Page 2: Comparing Universities 
@@ -112,7 +107,6 @@ navbarPage(
              
              mainPanel(
                # Output Charts
-               
                layout_columns(
                  card(card_header(plotOutput("compare1"))),
                  card(card_header(plotOutput("compare2")))

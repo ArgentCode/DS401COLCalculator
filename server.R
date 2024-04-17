@@ -21,9 +21,7 @@ function(input, output, session){
   
   
   # Map
-  
   output$distPlot <- renderPlotly({
-    
     dat <- data.frame(university_data) %>% 
       rename(Latitude = 'uni_lat', Longitude = 'uni_long', FixedName = pretty_name, CityPop = city_pop)
     
@@ -53,8 +51,7 @@ function(input, output, session){
   })
   
   
-  
-  #Data 
+  #Data Table
   output$table <- renderTable({
     
     # Relevant Inputs
@@ -62,7 +59,6 @@ function(input, output, session){
     miles_driven <- input$miles
     mpg <- input$mpg
     carOwner <- input$car_Owner
-    
     
     #Create the table
     Uni_data <- university_data %>%  
@@ -96,28 +92,49 @@ function(input, output, session){
     
   })
   
-  
-  
-  
-  # pi chart - overall cost of living
-  output$pi_chart <- renderPlot({
+  filterdCar <- reactive({
     which_university <- input$selected_univerity
-    carOwner <- input$car_Owner
-    
-    # Filtered Data
     miles_driven <- input$miles
     mpg <- input$mpg
     
+    data <- university_data %>%  
+      mutate(total_Gas = round(Gas * miles_driven / mpg/12), 2) %>% 
+      select(University, appartment_mean_cost, Monthly_food, Car_Maintenance, total_Gas)
+    data
+  })
+  
+  # Car Owner data
+  carOwner <- reactive({
+    which_university <- input$selected_univerity
+    
+    data <- filterdCar() %>%  
+      filter(University == which_university) %>% 
+      select(appartment_mean_cost, Monthly_food, Car_Maintenance, total_Gas)%>% 
+      pivot_longer(everything()) %>% 
+      filter(!grepl("^(Total|Remaining)", name))
+    
+    data
+  })
+  
+  # non-Car Owner Data
+  notcarOwner  <- reactive({ 
+    nonCarData <- university_data %>%  
+      filter(University == which_university) %>% 
+      select(appartment_mean_cost, Monthly_food)%>% 
+      pivot_longer(everything()) %>% 
+      filter(!grepl("^(Total|Remaining)", name))
+    
+    nonCarData
+  })
+  
+  # pi chart: shows overall cost of living
+  output$pi_chart <- renderPlot({
+    
     # Include Gas and Car Maintenance
-    if(carOwner){ 
-      budget_pie <- university_data %>%  
-        filter(University == which_university) %>% 
-        mutate(total_Gas = round(Gas * miles_driven / mpg/12), 2) %>% 
-        select(appartment_mean_cost, Monthly_food, Car_Maintenance, total_Gas)%>% 
-        pivot_longer(everything()) %>% 
-        filter(!grepl("^(Total|Remaining)", name))
+    if(input$car_Owner){ 
+      pieData <- carOwner()
       
-      ggplot(data = budget_pie, aes(x = "", y = value, fill = name)) +
+      ggplot(data = pieData, aes(x = "", y = value, fill = name)) +
         geom_col() +
         coord_polar("y", start = 0) +
         geom_text(aes(label = value),
@@ -132,13 +149,9 @@ function(input, output, session){
     
     # Exclude Gas and Car Maintenance
     else{
-      budget_pie <- university_data %>%  
-        filter(University == which_university) %>% 
-        select(appartment_mean_cost, Monthly_food)%>% 
-        pivot_longer(everything()) %>% 
-        filter(!grepl("^(Total|Remaining)", name))
+      pieData <- notcarOwner()
       
-      ggplot(data = budget_pie, aes(x = "", y = value, fill = name)) +
+      ggplot(data = pieData, aes(x = "", y = value, fill = name)) +
         geom_col() +
         coord_polar("y", start = 0) +
         geom_text(aes(label = value),
@@ -154,13 +167,18 @@ function(input, output, session){
     
   })
   
-  # Apartments
-  output$apartment_chart <- renderPlot({
+  
+  # Histogram data
+  HistogramData <- reactive({
     which_university <- input$selected_univerity
     Price <- university_data %>%  
       filter(University == which_university)
-    
-    Value <- Price$appartment_mean_cost
+    Price
+  })
+  
+  # Apartments
+  output$apartment_chart <- renderPlot({
+    Value <- HistogramData()$appartment_mean_cost
     
     ggplot(university_data, aes(x = appartment_mean_cost)) +
       geom_histogram( fill= "#A1D0EA", bins=20) +
@@ -173,11 +191,7 @@ function(input, output, session){
   
   # Food
   output$food_chart <- renderPlot({
-    which_university <- input$selected_univerity
-    foodPrice <- university_data %>%  
-      filter(University == which_university)
-    
-    Value <- foodPrice$Monthly_food
+    Value <- HistogramData()$Monthly_food
     
     ggplot(university_data, aes(x = Monthly_food)) +
       geom_histogram( fill= "#FFF157", bins=20) +
@@ -191,11 +205,7 @@ function(input, output, session){
   
   # Gas
   output$gas_prices <- renderPlot({
-    which_university <- input$selected_univerity
-    Price <- university_data %>%  
-      filter(University == which_university)
-    
-    Value <- Price$Gas
+    Value <- HistogramData()$Gas
     
     ggplot(university_data, aes(x = Gas)) +
       geom_histogram( fill= "#f5c77e", bins =20) +
@@ -220,15 +230,10 @@ function(input, output, session){
     # Include Gas and Car Maintenance
     if(carOwner){ 
       #Data
-      budget_pie <- university_data %>%  
-        filter(University == which_university) %>% 
-        mutate(total_Gas = round(Gas * miles_driven / mpg/12), 2) %>% 
-        select(appartment_mean_cost, Monthly_food, Car_Maintenance, total_Gas)%>% 
-        pivot_longer(everything()) %>% 
-        filter(!grepl("^(Total|Remaining)", name))
+      carOwnerData <- carOwner()
       
       # Chart
-      total_cost <- sum(budget_pie$value)
+      total_cost <- sum(carOwnerData$value)
       covered <- min(total_cost , grant)
       leftover <- total_cost - covered
       
@@ -236,7 +241,7 @@ function(input, output, session){
                        name = c("after grant", "covered"),
                        something = c("", ""))
       
-      ggplot(data=df, aes(fill=name, y=value, x=something)) +
+      ggplot(data=df, aes(fill=name, y=value, x=something), width=0.5) +
         geom_bar( position="stack", stat="identity") +
         labs(x = "Coverage",
              y = "Amount in Dollars" #title = "Amount Covered"
@@ -251,14 +256,10 @@ function(input, output, session){
     # Exclude Gas and Car Maintenance
     else{
       # Data
-      budget_pie <- university_data %>%  
-        filter(University == which_university) %>% 
-        select(appartment_mean_cost, Monthly_food)%>% 
-        pivot_longer(everything()) %>% 
-        filter(!grepl("^(Total|Remaining)", name))
+      nonCarData <- notcarOwner()
       
       # Charts
-      total_cost <- sum(budget_pie$value)
+      total_cost <- sum(nonCarData$value)
       covered <- min(total_cost , grant)
       leftover <- total_cost - covered
       
@@ -268,9 +269,7 @@ function(input, output, session){
       
       ggplot(data=df, aes(fill=name, y=value, x=something)) +
         geom_bar( position="stack", stat="identity") +
-        labs(x = "Coverage",
-             y = "Amount in Dollars" #, title = "Amount Covered"
-        ) +
+        labs(x = "Coverage", y = "Amount in Dollars") +
         scale_fill_manual(labels = c( "Not Covered By Stipend", "Covered"), values=c("#ed624a", "#A1D0EA")) +
         theme_minimal() +
         geom_text(aes(label = value), size = 3, hjust = 2, vjust = 3, position = "stack")+
@@ -281,19 +280,11 @@ function(input, output, session){
   })
   
   
-  # Compare 1
-  output$compare1 <-renderPlot({
-    which_university <- input$selected_univerity1
-    which_university2 <- input$selected_univerity2
-    miles_driven <- input$miles
-    mpg <- input$mpg
-    
-    budget_pie <- university_data %>%  
-      filter(University == which_university) %>% 
-      mutate(total_Gas = Gas * miles_driven / mpg/12) %>% 
-      select(appartment_mean_cost, Monthly_food, total_Gas)%>% 
-      pivot_longer(everything()) %>% 
-      filter(!grepl("^(Total|Remaining)", name))
+  # Find Max Apartment Cost
+  # Compare Helper function 
+  MaxAppartmentCost <- reactive({
+    which_university <- input$selected_univerity2
+    which_university2 <- input$selected_univerity1
     
     # Prices for University 1
     Price1 <- university_data %>%  
@@ -304,7 +295,21 @@ function(input, output, session){
       filter(University == which_university2)
     
     # limit the height of the chart
-    Max <- max(Price1$appartment_mean_cost, Price2$appartment_mean_cost) + 20
+    MaxCost <- max(Price1$appartment_mean_cost, Price2$appartment_mean_cost) + 20
+    
+    MaxCost
+  })
+  
+  # Compare 1
+  output$compare1 <-renderPlot({
+    which_university <- input$selected_univerity1
+    max <- MaxAppartmentCost() #the max between university 1 and univerity 2
+    
+    budget_pie <- filterdCar() %>%  
+      filter(University == which_university) %>% 
+      select(appartment_mean_cost, Monthly_food, total_Gas)%>% 
+      pivot_longer(everything()) %>% 
+      filter(!grepl("^(Total|Remaining)", name))
     
     # Bar Chart for University 1
     ggplot(data = budget_pie, aes(x = name, y = value, fill = name)) +
@@ -316,35 +321,22 @@ function(input, output, session){
            title = which_university) +
       scale_x_discrete(labels=c("Rent", "Food", "Gas")) + 
       scale_fill_manual(labels = c("Rent", "Food", "Gas"), values=c("#A1D0EA", "#ed624a", "#f0e441")) +
-      coord_cartesian(ylim = c(0,Max)) + 
+      coord_cartesian(ylim = c(0,max)) + 
       theme_minimal() 
   })
   
+
   # Compare 2
   output$compare2 <-renderPlot({
     which_university <- input$selected_univerity2
-    which_university2 <- input$selected_univerity1
-    miles_driven <- input$miles
-    mpg <- input$mpg
+    max <- MaxAppartmentCost() #the max between university 1 and univerity 2
     
-    budget_pie <- university_data %>%  
+    budget_pie <- filterdCar() %>%  
       filter(University == which_university) %>% 
-      mutate(total_Gas = Gas * miles_driven / mpg/12) %>% 
       select(appartment_mean_cost, Monthly_food, total_Gas)%>% 
       pivot_longer(everything()) %>% 
       filter(!grepl("^(Total|Remaining)", name))
-    
-    # Prices for University 2
-    Price1 <- university_data %>%  
-      filter(University == which_university)
-    
-    # Prices for University 1
-    Price2 <- university_data %>%  
-      filter(University == which_university2)
-    
-    # limit the height of the chart
-    Max <- max(Price1$appartment_mean_cost, Price2$appartment_mean_cost) + 20
-    
+  
     # Bar Chart for University 2
     ggplot(data = budget_pie, aes(x = name, y = value, fill = name)) +
       geom_bar(stat="identity") +
@@ -355,20 +347,26 @@ function(input, output, session){
            title = which_university) +
       scale_x_discrete(labels=c("Rent", "Food", "Gas")) + 
       scale_fill_manual(labels = c("Rent", "Food", "Gas"), values=c("#A1D0EA", "#ed624a", "#f0e441")) +
-      coord_cartesian(ylim = c(0,Max)) + 
+      coord_cartesian(ylim = c(0, max)) + 
       theme_minimal() 
   })
   
-  
-  #Map View
+  #Map View 
   repInput <- reactive({
-    miles_driven <- input$miles
-    mpg <- input$mpg
-    total_data <- university_data %>%  mutate(avg_cost = Gas * miles_driven / mpg/12 + 66+ appartment_mean_cost + Monthly_food)  %>% mutate(info = glue("{University}\n ${avg_cost}"))
+    if(input$car_Owner){
+      miles_driven <- input$miles
+      mpg <- input$mpg 
+      maintenanceCost = 66
+    }
+    else{
+      miles_driven <- 0
+      mpg <- 0
+      maintenanceCost = 0
+    }
+    total_data <- university_data %>%  mutate(avg_cost = Gas * miles_driven / mpg / 12 + maintenanceCost + appartment_mean_cost + Monthly_food)  %>% mutate(info = glue("{University}\n ${avg_cost}"))
     mapviewOptions(legend.pos= "bottomright")
     mapview(total_data, xcol = "uni_long", ycol = "uni_lat", crs = 4269, grid = FALSE, zcol= "avg_cost", alpha = 0.5, label = "info")
   })
-  
   output$mapplot <- renderLeaflet({
     repInput()@map %>% setView(-96, 39.1, zoom = 3)
   })

@@ -91,7 +91,7 @@ df <- data_frame(value = c(leftover, covered),
                  something = c("", ""))
 
 ggplot(data=df, aes(fill=name, y=value, x=something)) +
-  geom_bar( position="stack", stat="identity") +
+  geom_bar( position="stack", stat="identity", width=0.5) +
   labs(x = "Coverage",
        y = "Amount in Dollars",
        title = "Amount Covered") +
@@ -148,3 +148,19 @@ mapviewOptions(legend.pos= "bottomright")
 mapview(total_data, xcol = "uni_long", ycol = "uni_lat", crs = 4269, grid = FALSE, zcol= "avg_cost", alpha = 0.5, label = "University") 
 
 
+
+
+which_university <-"Iowa State University"
+miles_driven <- 15000
+mpg <- 25
+
+data <- university_data %>%  
+  mutate(total_Gas = round(Gas * miles_driven / mpg/12), 2) %>% 
+  select(University, appartment_mean_cost, Monthly_food, Car_Maintenance, total_Gas)
+
+data
+
+budget_pie <- data %>%  
+  filter(University == which_university)  %>%  select(appartment_mean_cost, Monthly_food, Car_Maintenance, total_Gas)%>% 
+  pivot_longer(everything()) %>% 
+  filter(!grepl("^(Total|Remaining)", name))

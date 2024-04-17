@@ -27,19 +27,13 @@ library(dplyr)
 
 university_data <- read_csv("https://raw.githubusercontent.com/ArgentCode/DS401COLCalculator/main/universities.csv", show_col_types = FALSE) %>% 
   select(pretty_name, 
-         zip, 
-         appartment_mean_cost, 
-         Appartment_Min, 
-         Appartment_Max, 
+         appartment_mean_cost, Appartment_Min, Appartment_Max, 
          Monthly_food, 
-         Car_Maintenance, 
-         Gas, 
-         uni_lat,
-         uni_long,
+         Car_Maintenance, Gas, 
+         uni_lat, uni_long, zip,
          University,
-         undergrad_pop, 
-         city_pop,
-         Car_Maintenance)
+         undergrad_pop, city_pop
+         )
 ```
 
 ```{r cars}
