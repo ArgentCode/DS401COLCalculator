@@ -164,3 +164,12 @@ budget_pie <- data %>%
   filter(University == which_university)  %>%  select(appartment_mean_cost, Monthly_food, Car_Maintenance, total_Gas)%>% 
   pivot_longer(everything()) %>% 
   filter(!grepl("^(Total|Remaining)", name))
+
+
+## stuff for the boxplot
+which_university = "Iowa State University"
+
+boxplot_data = rental_prices %>%
+  select(which_university)
+
+boxplot(as.numeric(boxplot_data[[which_university]]), main="Boxplot of Rental Data", ylab="Rental Prices")
