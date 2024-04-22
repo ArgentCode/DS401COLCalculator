@@ -14,9 +14,27 @@ library(sp)
 library(gstat)
 library(RMySQL)
 library(plainview)
+library(readr)
 library(dplyr)
 
-source("data-processing.R", local = TRUE)
+university_data <- read_csv("https://raw.githubusercontent.com/ArgentCode/DS401COLCalculator/main/universities.csv", show_col_types = FALSE) %>% 
+  select(pretty_name, 
+         zip, 
+         appartment_mean_cost, 
+         Appartment_Min, 
+         Appartment_Max, 
+         Monthly_food, 
+         Car_Maintenance, 
+         Gas, 
+         uni_lat,
+         uni_long,
+         University,
+         undergrad_pop, 
+         city_pop,
+         Car_Maintenance)
+
+rental_prices <-read_csv("https://raw.githubusercontent.com/ArgentCode/DS401COLCalculator/main/rentals.csv", show_col_types = FALSE)
+rental_prices = rental_prices[-1, ]
 
 function(input, output, session){
   
@@ -133,10 +151,19 @@ function(input, output, session){
   
   # pi chart: shows overall cost of living
   output$pi_chart <- renderPlot({
+    which_university <- input$selected_univerity
     
     # Include Gas and Car Maintenance
     if(input$car_Owner){ 
-      pieData <- carOwnerData()
+      miles_driven <- input$miles
+      mpg <- input$mpg
+      
+      pieData <- university_data %>%  
+        filter(University == which_university) %>% 
+        mutate(total_Gas = round(Gas * miles_driven / mpg/12), 2) %>% 
+        select(appartment_mean_cost, Monthly_food, Car_Maintenance, total_Gas)%>% 
+        pivot_longer(everything()) %>% 
+        filter(!grepl("^(Total|Remaining)", name))
       
       ggplot(data = pieData, aes(x = "", y = value, fill = name)) +
         geom_col() +
@@ -153,8 +180,13 @@ function(input, output, session){
     
     # Exclude Gas and Car Maintenance
     else{
-      pieData <- notcarOwner()
       
+      pieData <- university_data %>%  
+        filter(University == which_university) %>% 
+        select(appartment_mean_cost, Monthly_food)%>% 
+        pivot_longer(everything()) %>% 
+        filter(!grepl("^(Total|Remaining)", name))
+
       ggplot(data = pieData, aes(x = "", y = value, fill = name)) +
         geom_col() +
         coord_polar("y", start = 0) +
