@@ -173,3 +173,27 @@ boxplot_data = rental_prices %>%
   select(which_university)
 
 boxplot(as.numeric(boxplot_data[[which_university]]), main="Boxplot of Rental Data", ylab="Rental Prices")
+
+## Data Processing
+
+library(readxl)
+library(reshape2)
+
+rental_prices <-read_excel("rentals.xlsx")
+rental_prices = rental_prices[-1, ]
+
+## tester
+
+## stuff for the boxplot
+which_university1 = "Iowa State University"
+which_university2 = "Texas A&M University"
+
+# converting forms 
+value1 = as.numeric(rental_prices[[which_university1]])
+value2 = as.numeric(rental_prices[[which_university2]])
+
+# Create a side-by-side boxplot and removing erroneous terms
+boxplot(value1[value1 > 0], value2[value2 > 0],
+        main="Comparison of Rental prices",
+        ylab= "Price for studio/1 bed apartment",
+        names = c(which_university1, which_university2))

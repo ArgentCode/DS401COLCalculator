@@ -16,6 +16,8 @@ library(RMySQL)
 library(plainview)
 library(readr)
 library(dplyr)
+library(readxl)
+library(reshape2)
 
 university_data <- read_csv("https://raw.githubusercontent.com/ArgentCode/DS401COLCalculator/main/universities.csv", show_col_types = FALSE) %>% 
   select(pretty_name, 
@@ -33,8 +35,7 @@ university_data <- read_csv("https://raw.githubusercontent.com/ArgentCode/DS401C
          city_pop,
          Car_Maintenance)
 
-rental_prices <-read_csv("https://raw.githubusercontent.com/ArgentCode/DS401COLCalculator/main/rentals.csv", show_col_types = FALSE)
-rental_prices = rental_prices[-1, ]
+rental_prices <-read_excel("rentals.xlsx")
 
 function(input, output, session){
   
@@ -386,6 +387,21 @@ function(input, output, session){
       coord_cartesian(ylim = c(0, max)) + 
       theme_minimal() 
   })
+  
+  output$compare3 <- renderPlot({
+    which_university1 <-  input$selected_univerity1
+    which_university2 <-  input$selected_univerity2
+    # converting forms 
+    value1 = as.numeric(rental_prices[[which_university1]])
+    value2 = as.numeric(rental_prices[[which_university2]])
+    
+    # Create a side-by-side boxplot and removing erroneous terms
+    boxplot(value1[value1 > 0], value2[value2 > 0],
+            main="Comparison of Rental prices",
+            ylab= "Price for studio/1 bed apartment",
+            names = c(which_university1, which_university2))
+  })
+  
   
   #Map View 
   repInput <- reactive({

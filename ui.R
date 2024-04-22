@@ -111,7 +111,9 @@ navbarPage(
                layout_columns(
                  card(card_header(plotOutput("compare1"))),
                  card(card_header(plotOutput("compare2")))
-               )
+               ),
+               
+               card(card_header(max_width = 300, plotOutput("compare3")))
              )
            )),
   
