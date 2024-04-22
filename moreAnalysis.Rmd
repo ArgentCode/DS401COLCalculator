@@ -36,15 +36,6 @@ library(plotly)
 
 ```{r echo=FALSE}
 
-## stuff for the boxplot
-which_university = "Iowa State University"
-
-boxplot_data = rental_prices %>%
-  select(which_university)
-
-boxplot(as.numeric(boxplot_data[[which_university]]), main="Boxplot of Rental Data", ylab="Rental Prices")
-
-
 # City vs State Rent Prices
 df <- read.csv("universities.csv") %>% data.frame %>% select(University, State, pretty_name, appartment_mean_cost)
 stateMed <- read.csv("rentals.csv") %>% data.frame

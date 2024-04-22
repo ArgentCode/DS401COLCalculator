@@ -18,5 +18,5 @@ university_data <- read_csv("https://raw.githubusercontent.com/ArgentCode/DS401C
          city_pop,
          Car_Maintenance)
 
-rental_prices <-read_excel("https://raw.githubusercontent.com/ArgentCode/DS401COLCalculator/main/rentals.xlsx")
+rental_prices <-read_csv("https://raw.githubusercontent.com/ArgentCode/DS401COLCalculator/main/rentals.csv", show_col_types = FALSE)
 rental_prices = rental_prices[-1, ]
