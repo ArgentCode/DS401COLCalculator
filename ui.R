@@ -55,7 +55,7 @@ navbarPage(
                sliderInput("mpg",
                            "Miles Per Gallon:",
                            min =10, max = 60,
-                           value = 25),
+                           value = 30),
               
                tableOutput("table"),
                

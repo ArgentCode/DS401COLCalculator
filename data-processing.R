@@ -1,8 +1,6 @@
 library(readr)
 library(tidyverse)
-
-
-#university_data <- read_csv("https://raw.githubusercontent.com/ArgentCode/DS401COLCalculator/main/universities.csv")
+library(dplyr)
 
 university_data <- read_csv("https://raw.githubusercontent.com/ArgentCode/DS401COLCalculator/main/universities.csv", show_col_types = FALSE) %>% 
   select(pretty_name, 

@@ -92,7 +92,7 @@ function(input, output, session){
     
   })
   
-  filterdCar <- reactive({
+  filterdData <- reactive({
     which_university <- input$selected_univerity
     miles_driven <- input$miles
     mpg <- input$mpg
@@ -106,9 +106,12 @@ function(input, output, session){
   # Car Owner data
   carOwner <- reactive({
     which_university <- input$selected_univerity
+    miles_driven <- input$miles
+    mpg <- input$mpg
     
-    data <- filterdCar() %>%  
+    data <- university_data %>%  
       filter(University == which_university) %>% 
+      mutate(total_Gas = round(Gas * miles_driven / mpg/12), 2) %>% 
       select(appartment_mean_cost, Monthly_food, Car_Maintenance, total_Gas)%>% 
       pivot_longer(everything()) %>% 
       filter(!grepl("^(Total|Remaining)", name))
@@ -305,7 +308,7 @@ function(input, output, session){
     which_university <- input$selected_univerity1
     max <- MaxAppartmentCost() #the max between university 1 and univerity 2
     
-    budget_pie <- filterdCar() %>%  
+    budget_pie <- filterdData() %>%  
       filter(University == which_university) %>% 
       select(appartment_mean_cost, Monthly_food, total_Gas)%>% 
       pivot_longer(everything()) %>% 
@@ -331,7 +334,7 @@ function(input, output, session){
     which_university <- input$selected_univerity2
     max <- MaxAppartmentCost() #the max between university 1 and univerity 2
     
-    budget_pie <- filterdCar() %>%  
+    budget_pie <- filterdData() %>%  
       filter(University == which_university) %>% 
       select(appartment_mean_cost, Monthly_food, total_Gas)%>% 
       pivot_longer(everything()) %>% 
