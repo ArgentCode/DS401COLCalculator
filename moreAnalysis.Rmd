@@ -28,3 +28,34 @@ This map shows the estimated monthly costs for each college town. These estimate
 
 - **Food costs** are based on the local prices of selected food items at each town's local Target, scraped from Target.com on 30 March 2024
 
+
+```{r include=FALSE}
+library(tidyverse)
+library(plotly)
+```
+
+```{r echo=FALSE}
+
+## stuff for the boxplot
+which_university = "Iowa State University"
+
+boxplot_data = rental_prices %>%
+  select(which_university)
+
+boxplot(as.numeric(boxplot_data[[which_university]]), main="Boxplot of Rental Data", ylab="Rental Prices")
+
+
+# City vs State Rent Prices
+df <- read.csv("universities.csv") %>% data.frame %>% select(University, State, pretty_name, appartment_mean_cost)
+stateMed <- read.csv("rentals.csv") %>% data.frame
+
+fullDf <- merge(df, stateMed, by.x = "State", by.y = "state") %>% mutate(Difference = (appartment_mean_cost - MedianRent), CollegeTown = pretty_name, 
+                                                                         CityMean = appartment_mean_cost, StateMedian = MedianRent) %>% arrange(Difference)
+fullDf$n <- seq(nrow(fullDf))
+
+p <- ggplot(data = as.data.frame(fullDf), aes(x = n, y = Difference, lab1 = CityMean, lab2 = MedianRent, lab3 = CollegeTown)) + geom_point() + geom_hline(yintercept = 0, color = "red") + labs(x = NULL, title = "Difference in City vs. State Rent Prices")
+
+#ggplotly(p, tooltip = c("lab3", "lab1", "lab2", "y" ))
+
+print(p)
+```
