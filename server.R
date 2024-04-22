@@ -14,6 +14,7 @@ library(sp)
 library(gstat)
 library(RMySQL)
 library(plainview)
+library(dplyr)
 
 source("data-processing.R", local = TRUE)
 
@@ -104,7 +105,7 @@ function(input, output, session){
   })
   
   # Car Owner data
-  carOwner <- reactive({
+  carOwnerData <- reactive({
     which_university <- input$selected_univerity
     miles_driven <- input$miles
     mpg <- input$mpg
@@ -135,7 +136,7 @@ function(input, output, session){
     
     # Include Gas and Car Maintenance
     if(input$car_Owner){ 
-      pieData <- carOwner()
+      pieData <- carOwnerData()
       
       ggplot(data = pieData, aes(x = "", y = value, fill = name)) +
         geom_col() +
@@ -233,7 +234,7 @@ function(input, output, session){
     # Include Gas and Car Maintenance
     if(carOwner){ 
       #Data
-      carOwnerData <- carOwner()
+      carOwnerData <- carOwnerData()
       
       # Chart
       total_cost <- sum(carOwnerData$value)
