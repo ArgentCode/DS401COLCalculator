@@ -19,26 +19,9 @@ library(dplyr)
 library(readxl)
 library(reshape2)
 
-university_data <- read_csv("https://raw.githubusercontent.com/ArgentCode/DS401COLCalculator/main/universities.csv", show_col_types = FALSE) %>% 
-  select(pretty_name, 
-         zip, 
-         appartment_mean_cost, 
-         Appartment_Min, 
-         Appartment_Max, 
-         Monthly_food, 
-         Car_Maintenance, 
-         Gas, 
-         uni_lat,
-         uni_long,
-         University,
-         undergrad_pop, 
-         city_pop,
-         Car_Maintenance)
-
-rental_prices <-read_excel("rentals.xlsx")
+source("data-processing.R", local = TRUE)
 
 function(input, output, session){
-  
   
   # Map
   output$distPlot <- renderPlotly({
@@ -269,6 +252,7 @@ function(input, output, session){
       #Data
       carOwnerData <- carOwnerData()
       
+      
       # Chart
       total_cost <- sum(carOwnerData$value)
       covered <- min(total_cost , grant)
@@ -293,7 +277,11 @@ function(input, output, session){
     # Exclude Gas and Car Maintenance
     else{
       # Data
-      nonCarData <- notcarOwner()
+      nonCarData <- university_data %>%  
+        filter(University == which_university) %>% 
+        select(appartment_mean_cost, Monthly_food)%>% 
+        pivot_longer(everything()) %>% 
+        filter(!grepl("^(Total|Remaining)", name))
       
       # Charts
       total_cost <- sum(nonCarData$value)
