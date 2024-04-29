@@ -28,6 +28,7 @@ This map shows the estimated monthly costs for each college town. These estimate
 
 - **Food costs** are based on the local prices of selected food items at each town's local Target, scraped from Target.com on 30 March 2024
 
+- **State median rent price**: This was obtained from the most recent American Community Survey (2022) conducted by the US Census Bureau
 
 ```{r include=FALSE}
 library(tidyverse)
