@@ -3,19 +3,21 @@ title: "Data Sources"
 output: html_document
 ---
 
-National annual average of 15,000 miles for drivers sourced from the [Federal Highway Administration](https://www.fhwa.dot.gov/ohim/onh00/bar8.htm)
+National annual average of 15,000 miles for drivers sourced from the [Federal Highway Administration](https://www.fhwa.dot.gov/ohim/onh00/bar8.htm) (Last updated 31 May 2022)
  
-Data on the average fuel economy sourced from the [Corporate Average Fuel Economy Public Information Center Fleet Performance Report](https://explore.dot.gov/t/NHTSA-CAFE/views/CAFEPICReport-FleetPerformance/FleetPerformanceReportDashboard )
+Data on the average fuel economy sourced from the [Corporate Average Fuel Economy Public Information Center Fleet Performance Report](https://explore.dot.gov/t/NHTSA-CAFE/views/CAFEPICReport-FleetPerformance/FleetPerformanceReportDashboard) (Last updated 31 May 2023)
 
-Monthly regular maintenance costs sourced from the AAA article, ["What Does It Cost to Own and Operate a Car"](https://www.aaa.com/autorepair/articles/What-Does-It-Cost-To-Own-And-Operate-A-Car)
+Monthly regular maintenance costs sourced from the AAA article, ["What Does It Cost to Own and Operate a Car"](https://www.aaa.com/autorepair/articles/What-Does-It-Cost-To-Own-And-Operate-A-Car) 
 
-Regional food price data scraped from [Target.com](https://www.target.com)
+Regional food price data scraped from [Target.com](https://www.target.com) (Obtained on 30 March 2024)
 
-Rent prices for each city scraped from [Apartments.com](https://www.apartments.com)
+Rent prices for each city scraped from [Apartments.com](https://www.apartments.com) (Obtained on 5 April 2024)
 
-Population numbers sourced from the [2020 United States Decennial Census](https://api.census.gov/data/2020/dec/pl?get=P1_001N,NAME&for=place:*)
+Gas prices for each city from [GasBuddy.com](https://www.gasbuddy.com/) (Obtained on 5 March 2024)
 
-Undergraduate enrollment sourced from the Department of Education's [College Scorecard](https://collegescorecard.ed.gov/data/)
+Population numbers sourced from the [2020 United States Decennial Census](https://api.census.gov/data/2020/dec/pl?get=P1_001N,NAME&for=place:*) (Published 29 November 2022)
 
-University type (Flagship, Land Grant, Regional, Mixed, or Black) sourced from a [2009 report on College Towns from the University of New Hampshire](https://web.archive.org/web/20120217011024/http://pubpages.unh.edu/~gumprech/Collegetowns.pdf)
+Undergraduate enrollment sourced from the Department of Education's [College Scorecard](https://collegescorecard.ed.gov/data/) (Last updated on 31 October 2023)
+
+University type (Flagship, Land Grant, Regional, Mixed, or Black) sourced from a [2009 report on College Towns from the University of New Hampshire](https://web.archive.org/web/20120217011024/http://pubpages.unh.edu/~gumprech/Collegetowns.pdf) (Archived 7 February 2009)
 
