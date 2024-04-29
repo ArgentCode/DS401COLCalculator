@@ -259,10 +259,10 @@ function(input, output, session){
       leftover <- total_cost - covered
       
       df <- tibble(value = c(leftover, covered),
-                       name = c("after grant", "covered"),
+                       coverage = c("after grant", "covered"),
                        something = c("", ""))
       
-      ggplot(data=df, aes(fill=name, y=value, x=something), width=0.5) +
+      ggplot(data=df, aes(fill=coverage, y=value, x=something), width=0.5) +
         geom_bar( position="stack", stat="identity") +
         labs(x = "Coverage",
              y = "Amount in Dollars" #title = "Amount Covered"
