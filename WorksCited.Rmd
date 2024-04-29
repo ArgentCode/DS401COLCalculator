@@ -21,3 +21,4 @@ Undergraduate enrollment sourced from the Department of Education's [College Sco
 
 University type (Flagship, Land Grant, Regional, Mixed, or Black) sourced from a [2009 report on College Towns from the University of New Hampshire](https://web.archive.org/web/20120217011024/http://pubpages.unh.edu/~gumprech/Collegetowns.pdf) (Archived 7 February 2009)
 
+State median rent price sourced from the Census Bureau's [2022 American Community Survey](https://data.census.gov/table/ACSDP1Y2022.DP04?g=010XX00US$0400000)
