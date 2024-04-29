@@ -400,7 +400,7 @@ function(input, output, session){
     }
     else{
       miles_driven <- 0
-      mpg <- 0
+      mpg <- 7
       maintenanceCost = 0
     }
     total_data <- university_data %>%  mutate(avg_cost = Gas * miles_driven / mpg / 12 + maintenanceCost + appartment_mean_cost + Monthly_food)  %>% mutate(info = glue("{University}\n ${avg_cost}"))
