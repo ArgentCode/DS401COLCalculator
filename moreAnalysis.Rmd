@@ -35,7 +35,7 @@ library(tidyverse)
 library(plotly)
 ```
 
-```{r echo=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 
 # City vs State Rent Prices
 df <- read.csv("universities.csv") %>% data.frame %>% select(University, State, pretty_name, appartment_mean_cost)
@@ -45,9 +45,17 @@ fullDf <- merge(df, stateMed, by.x = "State", by.y = "state") %>% mutate(Differe
                                                                          CityMean = appartment_mean_cost, StateMedian = MedianRent) %>% arrange(Difference)
 fullDf$n <- seq(nrow(fullDf))
 
-p <- ggplot(data = as.data.frame(fullDf), aes(x = n, y = Difference, lab1 = CityMean, lab2 = MedianRent, lab3 = CollegeTown)) + geom_point() + geom_hline(yintercept = 0, color = "red") + labs(x = NULL, title = "Difference in City vs. State Rent Prices")
+p <- ggplot(data = as.data.frame(fullDf), aes(x = n, y = Difference, lab1 = CityMean, lab2 = MedianRent, lab3 = CollegeTown)) + geom_point() + geom_hline(yintercept = 0, color = "red") + labs(y = "Difference (City - State) USD", title = "Difference in City vs. State Rent Prices")
 
 #ggplotly(p, tooltip = c("lab3", "lab1", "lab2", "y" ))
 
 print(p)
+
+
+df <- read.csv("universities.csv") %>% data.frame %>% select(University, State, pretty_name, appartment_mean_cost, Monthly_food, undergrad_pop)
+
+ggplot(data = df, aes(x = log(as.numeric(undergrad_pop)), y = appartment_mean_cost)) + 
+  geom_point() + 
+  geom_smooth(method = "lm") +
+  labs(x = "log(undergrad pop)", y= "Monthly Rent (USD)", title = "Rent Prices vs Undergrad Population")
 ```
