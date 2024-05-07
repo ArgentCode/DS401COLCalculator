@@ -33,9 +33,19 @@ This map shows the estimated monthly costs for each college town. These estimate
 ```{r include=FALSE}
 library(tidyverse)
 library(plotly)
+library(ggplot2)
+library(ggpmisc)
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
+university_data <- read.csv("universities.csv")
+
+ggplot(university_data, aes(x = Total_Cost)) +
+      geom_histogram( fill= "grey", bins=20, color= "black") +
+      theme_classic() +
+      labs(x = "Total Monthly Cost of Living",
+           y = "count", 
+           title = "Distribution of Cost of Living")
 
 # City vs State Rent Prices
 df <- read.csv("universities.csv") %>% data.frame %>% select(University, State, pretty_name, appartment_mean_cost)
@@ -56,6 +66,7 @@ df <- read.csv("universities.csv") %>% data.frame %>% select(University, State, 
 
 ggplot(data = df, aes(x = log(as.numeric(undergrad_pop)), y = appartment_mean_cost)) + 
   geom_point() + 
-  geom_smooth(method = "lm") +
-  labs(x = "log(undergrad pop)", y= "Monthly Rent (USD)", title = "Rent Prices vs Undergrad Population")
+  stat_poly_line() +
+  stat_poly_eq(use_label("eq")) +
+  labs(x = "log(undergrad population)", y= "Monthly Rent (USD)", title = "Rent Prices vs Undergrad Population") 
 ```

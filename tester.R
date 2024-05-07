@@ -197,3 +197,40 @@ boxplot(value1[value1 > 0], value2[value2 > 0],
         main="Comparison of Rental prices",
         ylab= "Price for studio/1 bed apartment",
         names = c(which_university1, which_university2))
+
+
+ggplot(university_data, aes(x = Gas)) +
+  geom_histogram( fill= "#f5c77e", bins =20, color = "black") +
+  theme_classic() +
+  labs(x = "Cost of Regular Gas (per gallon)",
+       y = "count",
+       title = "Distribution of Gas Prices")
+
+
+ggplot(university_data, aes(x = Monthly_food)) +
+  geom_histogram( fill= "#FFF157", bins=20, color = "black") +
+  theme_classic() +
+  labs(x = "Monthly Food Cost",
+       y = "count",
+       title = "Distribution of Monthly Food Costs")
+
+
+ggplot(university_data, aes(x = appartment_mean_cost)) +
+  geom_histogram( fill= "#A1D0EA", bins=20, color = "black") +
+  theme_classic() +
+  labs(x = "Monthly Rent",
+       y = "count", 
+       title = "Distribution of Rent Costs")
+
+
+ggplot(university_data, aes(x = Total_Cost)) +
+  geom_histogram( fill= "grey", bins=20, color= "black") +
+  theme_classic() +
+  labs(x = "Total Monthly Cost of Living",
+       y = "count", 
+       title = "Distribution of Cost of Living")
+
+
+total_data <- university_data %>%  mutate(avg_cost = Gas * 15000 / 29.7875 / 12 + maintenanceCost + appartment_mean_cost + Monthly_food)  %>% mutate(info = glue("{University}\n ${avg_cost}"))
+mapviewOptions(legend.pos= "bottomright")
+mapview(total_data, xcol = "uni_long", ycol = "uni_lat", crs = 4269, grid = FALSE, zcol= "avg_cost", alpha = 0.5, label = "info")

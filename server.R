@@ -226,7 +226,6 @@ function(input, output, session){
   # Gas
   output$gas_prices <- renderPlot({
     Value <- HistogramData()$Gas
-    
     ggplot(university_data, aes(x = Gas)) +
       geom_histogram( fill= "#f5c77e", bins =20) +
       geom_vline(xintercept=Value, color="red") +
@@ -410,5 +409,6 @@ function(input, output, session){
   output$mapplot <- renderLeaflet({
     repInput()@map %>% setView(-96, 39.1, zoom = 3)
   })
+  
   
 }
